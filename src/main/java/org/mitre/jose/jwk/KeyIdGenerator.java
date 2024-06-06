@@ -10,7 +10,6 @@ import java.util.function.Function;
 import com.google.common.hash.Hashing;
 import com.nimbusds.jose.jwk.JWKParameterNames;
 import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jose.util.StandardCharset;
@@ -21,7 +20,6 @@ import com.nimbusds.jose.util.StandardCharset;
  */
 // KeyID generator functions
 public class KeyIdGenerator {
-    private static final String PUBLIC_KEY = "pub_key";
 
     public static KeyIdGenerator TIMESTAMP = new KeyIdGenerator("timestamp", (params) -> {
         KeyUse use = (KeyUse) params.get(JWKParameterNames.PUBLIC_KEY_USE);
@@ -41,11 +39,17 @@ public class KeyIdGenerator {
 		return Base64URL.encode(bytes).toString();
 	});
 
-    public static KeyIdGenerator SHA1 = new KeyIdGenerator("sha1", (params) -> {
+    public static KeyIdGenerator SHA384 = new KeyIdGenerator("sha384", (params) -> {
         final String json = JSONObjectUtils.toJSONString(params);
-        byte[] bytes = Hashing.sha1().hashBytes(json.getBytes(StandardCharset.UTF_8)).asBytes();
-		return Base64.encode(bytes).toString();
-	});
+        byte[] bytes = Hashing.sha384().hashBytes(json.getBytes(StandardCharset.UTF_8)).asBytes();
+        return Base64URL.encode(bytes).toString();
+    });
+
+    public static KeyIdGenerator SHA512 = new KeyIdGenerator("sha512", (params) -> {
+        final String json = JSONObjectUtils.toJSONString(params);
+        byte[] bytes = Hashing.sha512().hashBytes(json.getBytes(StandardCharset.UTF_8)).asBytes();
+        return Base64URL.encode(bytes).toString();
+    });
 
     public static KeyIdGenerator NONE = new KeyIdGenerator("none", (params) -> {
 		return null;
@@ -68,7 +72,7 @@ public class KeyIdGenerator {
 	}
 
 	public static List<KeyIdGenerator> values() {
-		return List.of(DATE, TIMESTAMP, SHA256, SHA1, NONE);
+        return List.of(DATE, TIMESTAMP, SHA256, SHA384, SHA512, NONE);
 	}
 
 	public static KeyIdGenerator get(String name) {

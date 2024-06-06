@@ -4,9 +4,9 @@ A commandline Java-based generator for JSON Web Keys (JWK) and JSON Private/Shar
 
 ## Standalone run
 
-To compile, run `mvn package`. This will generate a `json-web-key-generator-1.0.0-SNAPSHOT-jar-with-dependencies.jar` in the `/target` directory.
+To compile, run `mvn package`. This will generate a `json-web-key-generator-1.1.0-SNAPSHOT-jar-with-dependencies.jar` in the `/target` directory.
 
-To generate a key, run `java -jar target/json-web-key-generator-1.0.0-SNAPSHOT-jar-with-dependencies.jar -t <keytype>`. Several other arguments are defined which may be required depending on your key type:
+To generate a key, run `java -jar target/json-web-key-generator-1.1.0-SNAPSHOT-jar-with-dependencies.jar -t <keytype>`. Several other arguments are defined which may be required depending on your key type:
 
 ```
 usage: java -jar json-web-key-generator.jar -t <keyType> [options]
@@ -22,7 +22,7 @@ usage: java -jar json-web-key-generator.jar -t <keyType> [options]
  -i,--id <arg>             Key ID (optional), one will be generated if not
                            defined
  -g,--idGenerator <arg>    Key ID generation method (optional). Can be one
-                           of: date, timestamp, sha256, sha1, none. If
+                           of: date, timestamp, sha256, sha384, sha512, none. If
                            omitted, generator method defaults to
                            'timestamp'.
  -I,--noGenerateId         <deprecated> Don't generate a Key ID.
@@ -37,6 +37,7 @@ usage: java -jar json-web-key-generator.jar -t <keyType> [options]
                            will not be displayed to console. '-o/--output'
                            must be declared as well.
  -x,--x509                 Display keys in X509 PEM format
+ -C,--compact              Write output in compact mode.
 ```
 
 ## Docker

@@ -46,6 +46,7 @@ import org.bouncycastle.util.io.pem.PemWriter;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.FormattingStyle;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -98,6 +99,7 @@ public class Launcher {
 			String outFile = cmd.getOptionValue("o");
 			String pubOutFile = cmd.getOptionValue("P");
 			boolean printX509 = cmd.hasOption("x");
+            boolean compact = cmd.hasOption("C");
 
 			// process the Key ID
 			String kid = cmd.getOptionValue("i");
@@ -133,7 +135,7 @@ public class Launcher {
 
 			JWK jwk = makeKey(size, generator, crv, keyType, keyUse, keyAlg);
 
-			outputKey(keySet, pubKey, outFile, pubOutFile, printX509, jwk);
+            outputKey(keySet, pubKey, outFile, pubOutFile, printX509, compact, jwk);
 		} catch (NumberFormatException e) {
 			throw printUsageAndExit("Invalid key size: " + e.getMessage());
 		} catch (ParseException e) {
@@ -186,6 +188,8 @@ public class Launcher {
 			+ "Key material will not be displayed to console.");
 		options.addOption("P", "pubKeyOutput", true, "Write public key to separate file. Will append to existing KeySet if -S is used. "
 			+ "Key material will not be displayed to console. '-o/--output' must be declared as well.");
+        options.addOption("C", "compact", false,
+                "Write output in compact mode.");
 	}
 
 	private static KeyUse validateKeyUse(String use) {
@@ -266,9 +270,16 @@ public class Launcher {
 		return RSAKeyMaker.make(keySize, keyUse, keyAlg, kid);
 	}
 
-	private static void outputKey(boolean keySet, boolean pubKey, String outFile, String pubOutFile, boolean printX509, JWK jwk) throws IOException, java.text.ParseException {
-		// round trip it through GSON to get a prettyprinter
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static void outputKey(boolean keySet, boolean pubKey, String outFile, String pubOutFile, boolean printX509, boolean compact,
+            JWK jwk) throws IOException, java.text.ParseException {
+        // round trip it through GSON to get a pretty printer
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        if (compact) {
+            gsonBuilder.setFormattingStyle(FormattingStyle.COMPACT);
+        } else {
+            gsonBuilder.setPrettyPrinting();
+        }
+        Gson gson = gsonBuilder.create();
 		if (outFile == null) {
 
 			System.out.println("Full key:");
@@ -443,7 +454,7 @@ public class Launcher {
 			System.err.println(message);
 		}
 
-		List<String> optionOrder = ImmutableList.of("t", "s", "c", "u", "a", "i", "g", "I", "p", "S", "o", "P", "x");
+        List<String> optionOrder = ImmutableList.of("t", "s", "c", "u", "a", "i", "g", "I", "p", "S", "o", "P", "x", "C");
 
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.setOptionComparator(Comparator.comparingInt(o -> optionOrder.indexOf(o.getOpt())));
