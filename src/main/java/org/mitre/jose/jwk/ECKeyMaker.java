@@ -62,11 +62,7 @@ public class ECKeyMaker {
                     .build();
 
             return ecKey;
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-            return null;
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
+        } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }
