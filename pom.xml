@@ -50,6 +50,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -69,7 +70,7 @@
 						</manifest>
 						<manifestEntries>
 							<mode>development</mode>
-							<url>${pom.url}</url>
+							<url>${project.url}</url>
 						</manifestEntries>
 
 					</archive>
@@ -84,6 +85,14 @@
 					</execution>
 				</executions>
 			</plugin>
+	        <plugin>
+	            <artifactId>maven-surefire-plugin</artifactId>
+	            <version>3.1.2</version>
+	        </plugin>
+	        <plugin>
+	            <artifactId>maven-failsafe-plugin</artifactId>
+	            <version>3.1.2</version>
+	        </plugin>			
 		</plugins>
 	</build>
 	<dependencies>
@@ -116,6 +125,6 @@
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpkix-jdk18on</artifactId>
 			<version>1.78.1</version>
-		</dependency>
+		</dependency>		
 	</dependencies>
 </project>
