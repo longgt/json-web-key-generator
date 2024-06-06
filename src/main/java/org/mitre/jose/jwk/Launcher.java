@@ -58,6 +58,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyType;
 import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.util.JSONObjectUtils;
 
 /**
  * Small Helper App to generate Json Web Keys
@@ -407,8 +408,8 @@ public class Launcher {
 			List<JWK> jwkList = new ArrayList<>(existingKeys);
 			jwkList.add(jwk);
 			JWKSet jwkSet = new JWKSet(jwkList);
-			json = JsonParser.parseString(jwkSet.toJSONObject(false).toJSONString());
-			pubJson = JsonParser.parseString(jwkSet.toJSONObject(true).toJSONString());
+            json = JsonParser.parseString(JSONObjectUtils.toJSONString(jwkSet.toJSONObject(false)));
+            pubJson = JsonParser.parseString(JSONObjectUtils.toJSONString(jwkSet.toJSONObject(true)));
 		} else {
 			json = JsonParser.parseString(jwk.toJSONString());
 			pubJson = JsonParser.parseString(jwk.toPublicJWK().toJSONString());
@@ -427,7 +428,7 @@ public class Launcher {
 	private static void printKey(boolean keySet, JWK jwk, Gson gson) {
 		if (keySet) {
 			JWKSet jwkSet = new JWKSet(jwk);
-			JsonElement json = JsonParser.parseString(jwkSet.toJSONObject(false).toJSONString());
+            JsonElement json = JsonParser.parseString(JSONObjectUtils.toJSONString(jwkSet.toJSONObject(false)));
 			System.out.println(gson.toJson(json));
 		} else {
 			JsonElement json = JsonParser.parseString(jwk.toJSONString());

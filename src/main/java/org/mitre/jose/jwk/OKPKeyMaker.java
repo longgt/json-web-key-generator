@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.LinkedHashMap;
 
 import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.ASN1OctetString;
@@ -12,6 +13,8 @@ import org.bouncycastle.asn1.ASN1Sequence;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKParameterNames;
+import com.nimbusds.jose.jwk.KeyType;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.OctetKeyPair;
 import com.nimbusds.jose.util.Base64URL;
@@ -84,12 +87,17 @@ public class OKPKeyMaker {
 				d = ((ASN1OctetString)ASN1OctetString.fromByteArray(d)).getOctets();
 			}
 
+            LinkedHashMap<String, Object> requiredParams = new LinkedHashMap<>();
+            requiredParams.put(JWKParameterNames.OKP_SUBTYPE, keyCurve.toString());
+            requiredParams.put(JWKParameterNames.KEY_TYPE, KeyType.OKP.getValue());
+            requiredParams.put(JWKParameterNames.OKP_PUBLIC_KEY, Base64URL.encode(x).toString());
+
 			// Now that we have the raw numbers, export them as a JWK
 			OctetKeyPair jwk = new OctetKeyPair.Builder(keyCurve, Base64URL.encode(x))
 				.d(Base64URL.encode(d))
 				.keyUse(keyUse)
 				.algorithm(keyAlg)
-				.keyID(kid.generate(keyUse, x))
+                    .keyID(kid.generate(requiredParams))
 				.build();
 
 			return jwk;

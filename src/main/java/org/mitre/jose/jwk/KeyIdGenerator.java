@@ -3,13 +3,17 @@ package org.mitre.jose.jwk;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.google.common.hash.Hashing;
+import com.nimbusds.jose.jwk.JWKParameterNames;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jose.util.JSONObjectUtils;
+import com.nimbusds.jose.util.StandardCharset;
 
 /**
  * @author jricher
@@ -17,40 +21,46 @@ import com.nimbusds.jose.util.Base64URL;
  */
 // KeyID generator functions
 public class KeyIdGenerator {
-	public static KeyIdGenerator TIMESTAMP = new KeyIdGenerator("timestamp", (use, pubKey) -> {
+    private static final String PUBLIC_KEY = "pub_key";
+
+    public static KeyIdGenerator TIMESTAMP = new KeyIdGenerator("timestamp", (params) -> {
+        KeyUse use = (KeyUse) params.get(JWKParameterNames.PUBLIC_KEY_USE);
 		return Optional.ofNullable(use).map(KeyUse::getValue).map(s -> s + "-").orElse("")
 			+ Instant.now().getEpochSecond();
 	});
 
-	public static KeyIdGenerator DATE = new KeyIdGenerator("date", (use, pubKey) -> {
+    public static KeyIdGenerator DATE = new KeyIdGenerator("date", (params) -> {
+        KeyUse use = (KeyUse) params.get(JWKParameterNames.PUBLIC_KEY_USE);
 		return Optional.ofNullable(use).map(KeyUse::getValue).map(s -> s + "-").orElse("")
 			+ Instant.now().truncatedTo(ChronoUnit.SECONDS).toString();
 	});
 
-	public static KeyIdGenerator SHA256 = new KeyIdGenerator("sha256", (use, pubKey) -> {
-		byte[] bytes = Hashing.sha256().hashBytes(pubKey).asBytes();
+    public static KeyIdGenerator SHA256 = new KeyIdGenerator("sha256", (params) -> {
+        final String json = JSONObjectUtils.toJSONString(params);
+        byte[] bytes = Hashing.sha256().hashBytes(json.getBytes(StandardCharset.UTF_8)).asBytes();
 		return Base64URL.encode(bytes).toString();
 	});
 
-	public static KeyIdGenerator SHA1 = new KeyIdGenerator("sha1", (use, pubKey) -> {
-		byte[] bytes = Hashing.sha1().hashBytes(pubKey).asBytes();
+    public static KeyIdGenerator SHA1 = new KeyIdGenerator("sha1", (params) -> {
+        final String json = JSONObjectUtils.toJSONString(params);
+        byte[] bytes = Hashing.sha1().hashBytes(json.getBytes(StandardCharset.UTF_8)).asBytes();
 		return Base64.encode(bytes).toString();
 	});
 
-	public static KeyIdGenerator NONE = new KeyIdGenerator("none", (use, pubKey) -> {
+    public static KeyIdGenerator NONE = new KeyIdGenerator("none", (params) -> {
 		return null;
 	});
 
 	private final String name;
-	private final BiFunction<KeyUse, byte[], String> fn;
+    private final Function<Map<String, Object>, String> fn;
 
-	public KeyIdGenerator(String name, BiFunction<KeyUse, byte[], String> fn) {
+    public KeyIdGenerator(String name, Function<Map<String, Object>, String> fn) {
 		this.name = name;
 		this.fn = fn;
 	}
 
-	public String generate(KeyUse keyUse, byte[] pubKey) {
-		return this.fn.apply(keyUse, pubKey);
+    public String generate(final Map<String, Object> params) {
+        return this.fn.apply(params);
 	}
 
 	public String getName() {
@@ -69,7 +79,7 @@ public class KeyIdGenerator {
 	}
 
 	public static KeyIdGenerator specified(String kid) {
-		return new KeyIdGenerator(null, (u, p) -> kid);
+        return new KeyIdGenerator(null, (params) -> kid);
 	}
 }
 
