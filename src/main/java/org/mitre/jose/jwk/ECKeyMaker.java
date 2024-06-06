@@ -10,11 +10,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECParameterSpec;
+import java.util.LinkedHashMap;
 
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.JWKParameterNames;
+import com.nimbusds.jose.jwk.KeyType;
 import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.util.Base64URL;
 
 /**
  * @author jricher
@@ -41,9 +45,18 @@ public class ECKeyMaker {
             ECPublicKey pub = (ECPublicKey) kp.getPublic();
             ECPrivateKey priv = (ECPrivateKey) kp.getPrivate();
 
+            Base64URL x = ECKey.encodeCoordinate(pub.getParams().getCurve().getField().getFieldSize(), pub.getW().getAffineX());
+            Base64URL y = ECKey.encodeCoordinate(pub.getParams().getCurve().getField().getFieldSize(), pub.getW().getAffineY());
+
+            LinkedHashMap<String, Object> requiredParams = new LinkedHashMap<>();
+            requiredParams.put(JWKParameterNames.ELLIPTIC_CURVE, crv.toString());
+            requiredParams.put(JWKParameterNames.KEY_TYPE, KeyType.EC.getValue());
+            requiredParams.put(JWKParameterNames.ELLIPTIC_CURVE_X_COORDINATE, x.toString());
+            requiredParams.put(JWKParameterNames.ELLIPTIC_CURVE_Y_COORDINATE, y.toString());
+
             ECKey ecKey = new ECKey.Builder(crv, pub)
                     .privateKey(priv)
-                    .keyID(kid.generate(keyUse, pub.getEncoded()))
+                    .keyID(kid.generate(requiredParams))
                     .algorithm(keyAlg)
                     .keyUse(keyUse)
                     .build();
