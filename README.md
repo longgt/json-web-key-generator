@@ -22,7 +22,7 @@ usage: java -jar json-web-key-generator.jar -t <keyType> [options]
  -i,--id <arg>             Key ID (optional), one will be generated if not
                            defined
  -g,--idGenerator <arg>    Key ID generation method (optional). Can be one
-                           of: date, timestamp, sha256, sha384, sha512, none. If
+                           of: date, timestamp, sha256, sha384, sha512, uuid, none. If
                            omitted, generator method defaults to
                            'timestamp'.
  -I,--noGenerateId         <deprecated> Don't generate a Key ID.

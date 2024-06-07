@@ -52,6 +52,10 @@ public class KeyIdGenerator {
         return Base64URL.encode(bytes).toString();
     });
 
+    public static KeyIdGenerator UUID = new KeyIdGenerator("uuid", (params) -> {
+        return java.util.UUID.randomUUID().toString();
+    });
+
     public static KeyIdGenerator NONE = new KeyIdGenerator("none", (params) -> {
 		return null;
 	});
@@ -73,7 +77,7 @@ public class KeyIdGenerator {
 	}
 
 	public static List<KeyIdGenerator> values() {
-        return List.of(DATE, TIMESTAMP, SHA256, SHA384, SHA512, NONE);
+        return List.of(DATE, TIMESTAMP, SHA256, SHA384, SHA512, UUID, NONE);
 	}
 
 	public static KeyIdGenerator get(String name) {
