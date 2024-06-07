@@ -11,20 +11,23 @@ To generate a key, run `java -jar target/json-web-key-generator-1.1.0-SNAPSHOT-j
 ```
 usage: java -jar json-web-key-generator.jar -t <keyType> [options]
  -t,--type <arg>           Key Type, one of: RSA, oct, EC, OKP
+                           (case-insensitive)
  -s,--size <arg>           Key Size in bits, required for RSA and oct key
-                           types. Must be an integer divisible by 8
+                           types. Must be an integer divisible by 8. If
+                           omitted, defaults to 2048 for RSA, 2048 for oct
  -c,--curve <arg>          Key Curve, required for EC or OKP key type.
                            Must be one of P-256, secp256k1, P-384, P-521
                            for EC keys or one of Ed25519, Ed448, X25519,
-                           X448 for OKP keys.
+                           X448 for OKP keys. If omitted, defaults to
+                           P-256 for EC, Ed25519 for OKP
  -u,--usage <arg>          Usage, one of: enc, sig (optional)
  -a,--algorithm <arg>      Algorithm (optional)
  -i,--id <arg>             Key ID (optional), one will be generated if not
                            defined
  -g,--idGenerator <arg>    Key ID generation method (optional). Can be one
-                           of: date, timestamp, sha256, sha384, sha512, uuid, none. If
-                           omitted, generator method defaults to
-                           'timestamp'.
+                           of: date, timestamp, sha256, sha384, sha512,
+                           uuid, none. If omitted, generator method
+                           defaults to 'timestamp'.
  -I,--noGenerateId         <deprecated> Don't generate a Key ID.
                            (Deprecated, use '-g none' instead.)
  -p,--showPubKey           Display public key separately (if applicable)
