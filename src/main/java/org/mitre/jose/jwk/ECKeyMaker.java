@@ -25,6 +25,8 @@ import com.nimbusds.jose.util.Base64URL;
  */
 public class ECKeyMaker {
 
+    public static final Curve DEFAULT_CURVE = Curve.P_256;
+
     /**
      * @param crv
      * @param keyUse

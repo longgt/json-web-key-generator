@@ -22,6 +22,8 @@ import com.nimbusds.jose.util.Base64URL;
  */
 public class RSAKeyMaker {
 
+    public static final String DEFAULT_KEY_SIZE = "2048";
+
     /**
      * @param keySize
      * @param keyUse
