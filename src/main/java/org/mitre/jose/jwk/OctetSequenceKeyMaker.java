@@ -22,7 +22,7 @@ public class OctetSequenceKeyMaker {
      * @param keySize in bits
      * @return
      */
-    public static OctetSequenceKey make(Integer keySize, KeyUse use, Algorithm alg, KeyIdGenerator kid) {
+    public static OctetSequenceKey make(Integer keySize, KeyUse keyUse, Algorithm alg, KeyIdGenerator kid) {
 
         // holder for the random bytes
         byte[] bytes = new byte[keySize / 8];
@@ -36,12 +36,13 @@ public class OctetSequenceKeyMaker {
         LinkedHashMap<String, Object> requiredParams = new LinkedHashMap<>();
         requiredParams.put(JWKParameterNames.OCT_KEY_VALUE, encoded.toString());
         requiredParams.put(JWKParameterNames.KEY_TYPE, KeyType.OCT.getValue());
+        requiredParams.put(JWKParameterNames.PUBLIC_KEY_USE, keyUse);
 
         // make a key
         OctetSequenceKey octetSequenceKey = new OctetSequenceKey.Builder(encoded)
                 .keyID(kid.generate(requiredParams))
                 .algorithm(alg)
-                .keyUse(use)
+                .keyUse(keyUse)
                 .build();
 
         return octetSequenceKey;

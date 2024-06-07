@@ -2,6 +2,7 @@ package org.mitre.jose.jwk;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,21 +35,25 @@ public class KeyIdGenerator {
 	});
 
     public static KeyIdGenerator SHA256 = new KeyIdGenerator("sha256", (params) -> {
-        final String json = JSONObjectUtils.toJSONString(params);
+        final String json = JSONObjectUtils.toJSONString(normalizeParams(params));
         byte[] bytes = Hashing.sha256().hashBytes(json.getBytes(StandardCharset.UTF_8)).asBytes();
 		return Base64URL.encode(bytes).toString();
 	});
 
     public static KeyIdGenerator SHA384 = new KeyIdGenerator("sha384", (params) -> {
-        final String json = JSONObjectUtils.toJSONString(params);
+        final String json = JSONObjectUtils.toJSONString(normalizeParams(params));
         byte[] bytes = Hashing.sha384().hashBytes(json.getBytes(StandardCharset.UTF_8)).asBytes();
         return Base64URL.encode(bytes).toString();
     });
 
     public static KeyIdGenerator SHA512 = new KeyIdGenerator("sha512", (params) -> {
-        final String json = JSONObjectUtils.toJSONString(params);
+        final String json = JSONObjectUtils.toJSONString(normalizeParams(params));
         byte[] bytes = Hashing.sha512().hashBytes(json.getBytes(StandardCharset.UTF_8)).asBytes();
         return Base64URL.encode(bytes).toString();
+    });
+
+    public static KeyIdGenerator UUID = new KeyIdGenerator("uuid", (params) -> {
+        return java.util.UUID.randomUUID().toString();
     });
 
     public static KeyIdGenerator NONE = new KeyIdGenerator("none", (params) -> {
@@ -72,7 +77,7 @@ public class KeyIdGenerator {
 	}
 
 	public static List<KeyIdGenerator> values() {
-        return List.of(DATE, TIMESTAMP, SHA256, SHA384, SHA512, NONE);
+        return List.of(DATE, TIMESTAMP, SHA256, SHA384, SHA512, UUID, NONE);
 	}
 
 	public static KeyIdGenerator get(String name) {
@@ -85,5 +90,12 @@ public class KeyIdGenerator {
 	public static KeyIdGenerator specified(String kid) {
         return new KeyIdGenerator(null, (params) -> kid);
 	}
+
+    private static Map<String, Object> normalizeParams(final Map<String, Object> params) {
+        Map<String, Object> requiredParams = new LinkedHashMap<>(params);
+        requiredParams.remove(JWKParameterNames.PUBLIC_KEY_USE);
+
+        return requiredParams;
+    }
 }
 

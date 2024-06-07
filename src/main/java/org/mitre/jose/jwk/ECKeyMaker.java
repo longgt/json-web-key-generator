@@ -53,6 +53,7 @@ public class ECKeyMaker {
             requiredParams.put(JWKParameterNames.KEY_TYPE, KeyType.EC.getValue());
             requiredParams.put(JWKParameterNames.ELLIPTIC_CURVE_X_COORDINATE, x.toString());
             requiredParams.put(JWKParameterNames.ELLIPTIC_CURVE_Y_COORDINATE, y.toString());
+            requiredParams.put(JWKParameterNames.PUBLIC_KEY_USE, keyUse);
 
             ECKey ecKey = new ECKey.Builder(crv, pub)
                     .privateKey(priv)

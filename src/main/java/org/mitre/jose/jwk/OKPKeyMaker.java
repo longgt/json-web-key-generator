@@ -90,6 +90,7 @@ public class OKPKeyMaker {
             requiredParams.put(JWKParameterNames.OKP_SUBTYPE, keyCurve.toString());
             requiredParams.put(JWKParameterNames.KEY_TYPE, KeyType.OKP.getValue());
             requiredParams.put(JWKParameterNames.OKP_PUBLIC_KEY, Base64URL.encode(x).toString());
+            requiredParams.put(JWKParameterNames.PUBLIC_KEY_USE, keyUse);
 
 			// Now that we have the raw numbers, export them as a JWK
 			OctetKeyPair jwk = new OctetKeyPair.Builder(keyCurve, Base64URL.encode(x))

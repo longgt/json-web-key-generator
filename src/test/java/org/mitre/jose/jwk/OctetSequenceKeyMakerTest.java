@@ -1,6 +1,9 @@
 package org.mitre.jose.jwk;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +42,15 @@ public class OctetSequenceKeyMakerTest {
         OctetSequenceKey octKey = new OctetSequenceKey.Builder(key).keyIDFromThumbprint(hashAlg).build();
         assertEquals(key.getKeyID(), octKey.getKeyID(),
                 "kid should be same as " + hashAlg + " hashed value from method keyIDFromThumbprint");
+    }
+
+    @Test
+    void uuid() throws JOSEException {
+        KeyIdGenerator kidGenerator = KeyIdGenerator.UUID;
+        OctetSequenceKey key = OctetSequenceKeyMaker.make(2048, KeyUse.SIGNATURE, JWSAlgorithm.HS256, kidGenerator);
+        assertDoesNotThrow(() -> {
+            UUID.fromString(key.getKeyID());
+        });
     }
 
 }
