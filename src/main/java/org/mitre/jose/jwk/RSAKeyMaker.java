@@ -46,6 +46,7 @@ public class RSAKeyMaker {
             requiredParams.put(JWKParameterNames.RSA_EXPONENT, e.toString());
             requiredParams.put(JWKParameterNames.KEY_TYPE, KeyType.RSA.getValue());
             requiredParams.put(JWKParameterNames.RSA_MODULUS, n.toString());
+            requiredParams.put(JWKParameterNames.PUBLIC_KEY_USE, keyUse);
 
             RSAKey rsaKey = new RSAKey.Builder(pub)
                     .privateKey(priv)
