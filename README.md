@@ -4,9 +4,9 @@ A commandline Java-based generator for JSON Web Keys (JWK) and JSON Private/Shar
 
 ## Standalone run
 
-To compile, run `mvn package`. This will generate a `json-web-key-generator-1.1.0-SNAPSHOT-jar-with-dependencies.jar` in the `/target` directory.
+To compile, run `mvn package`. This will generate a `json-web-key-generator-jar-with-dependencies.jar` in the `/target` directory.
 
-To generate a key, run `java -jar target/json-web-key-generator-1.1.0-SNAPSHOT-jar-with-dependencies.jar -t <keytype>`. Several other arguments are defined which may be required depending on your key type:
+To generate a key, run `java -jar target/json-web-key-generator-jar-with-dependencies.jar -t <keytype>`. Several other arguments are defined which may be required depending on your key type:
 
 ```
 usage: java -jar json-web-key-generator.jar -t <keyType> [options]
@@ -71,21 +71,21 @@ docker push <your_docker_id>/json-web-key-generator --all-tags
 
 ### Run from docker
 
-Example of running the app  within a docker container to generate a 2048 bit RSA JWK.
+Example of running the app  within a docker container to generate a 3072 bit RSA JWK, kid generator = uuid.
 
 ```bash
-$ docker run --rm <your_docker_id>/json-web-key-generator:latest -t RSA -s 2048
+$ docker run --rm <your_docker_id>/json-web-key-generator:latest -t RSA -s 3072 -g uuid
 Full key:
 {
-  "p": "7blCsqibq1iTDOTxpLU9T5WEy5DgbwB65fXFEeU2y58mNUjXBFhDWppuEpJ7iMJtMsOhB60Mmf8ujRNVp8KmVT9eF6MwO7tW7sprq45YncwC8pZIpMqDdKOvB9moHVW9FzPlZimUzJsfgPAQc73SrpOSqwGHvPxfjvfO-kM_7wc",
+  "p": "9Y-Qn4lqZogfG-9-Xb5oFvW8DIL299gMvmxIuvv9GBXQSSVlTD7w_DAYkGeRRfqojpUzLXJd4f654WQwASaKRng--P2Z58S3Jyaic1rUA7de_9qBcQ8_0gp2LuEZQV5wPl0jWbtbzdS37ZW24L_SdbZDi-7VwG7keM8yp01z9D7s9h0y5nD8GkS2vq6aPZlqHqDRjIJ5BunxFuRfg4aRTYUiPw0S0L2qiP91OqwLG3qiOcwZTt1VZ53-9ToqaqFD",
   "kty": "RSA",
-  "q": "uTMQv72suZzTkQg78MlDDNjYSjl_jRrok9pME_j4L94bEpqwftCLAHo9YCDHmMREcJa5X4UCIeG2bAqPx4izluaRQ3mktISMXtnPvLYUkooeWrQtrD7rYwurJeh0n_y_0YMVfH0OUUXxOOu6hljBXoxDhoqzPysJOljDEordNoc",
-  "d": "S14hFH5Ri0DrZqY4bArM8ryEjxv35kSLU6sixiCjHkCH0ZW9_tYEINDD9DRhggQtGfpuPsfIPQ0AWX9LmtKnIrOVmscrI_E8dkPvbTPAf_GePFSQaqtYobr4mjdhWHXStRGqSQnRnRpqbjcjs3wRyV42CTgJf8tBM1vTx_Pak5NYCpHWBu9vnN-Pzd60gpPxRZe-HaJbGRMVTNw11Rys--7Vcq-k6iyhYYBQiL3c62zNW6GzucmXxbSs8gQduPArvCKUAbJoMhWdCDvO3JIQTxccUdACs7xe9RDxucMHKbLM0yWUEbL6mS0J93-SypwNvUKbOkrGuc4sybmr2b1X5Q",
+  "q": "_krVVmNMKd6Enigkywj_wxHZXuobhk22ou9q9NN363ri7GND005gBNdjoEyv-cP7KxwzSFPxiuZ7k6pifd85iy6ue1_MOp7oM4B7y3SyfQB9dKZDintHYUxKOkX-Fo6FxWDIWJnLcoMz0mXOax7ZkPIQS3wHmpOOTqoL6DcnNoz8vhmqCxxzmcguQdNk9r-7hduHImyjmdtvKnQjwj9atH8MroRpOaJETnMzU0ln9uL2G5Z9EGIJ4HhOhygHDKHX",
+  "d": "BK9taKB31a-8vdKgVTue9xcXGwcZBEEUbMDCQHYCYzfxG2jR-k_7mO9TC0-_ZE3YNhCyo-Pjb3YeikTPlC0Rz8fQwyqBhASQmhWcdLOZrhyt6M2mczR-RQIRT8Jeisx8vASlvkimiKyGtIsWnioMUobAVbokynbPuI3HIIaEYR3yGD4uz9dorfiCZvSYVD_gdS9bMZrFslKcTS6O-EW9Z_4_Zc165o1FXj3h9XgJTlgIFOIdwgXP7YurNGQ5_MaY7j2ovDfpCqADhPL-d3O4FGqXC8vMyxzGg3rWO3ruDpkKVDt2h7-ahRbhJpIZLwtXWCb2U1Kve1fcfABIwm_7p6bnN6f4MjnhQS71FB4zTuB_zHw8-U7YktYd9WrrTDJLK7Z6Hj70HT6rHbUEAIsbXJZAy9Djmh1uxeenaFc4Uc--v5iooRCToS2kBgwvHdRkzRLsnh39XyMLQJu1dx4y2er9Mc2QgkFkZumvn1a2jMs9W45haFMFEuWL1P3CLdAz",
   "e": "AQAB",
-  "kid": "1655476144",
-  "qi": "QMyZMfoUzearQ37ssHP5iB9FHDtZsTkq2Qr_76xMidgk5MJyEwJT90tAK3cC2x_tBRYKKrT9GXQYSHHNX0govfUGzwmlyK0GxX92C_Tr0BQZQzt2JP4BUnBk35REMPTv6aP1ODZ3u7d1_bvIY0bwZSDTVGirIdGYXRwf8XQdYQQ",
-  "dp": "J5_1yinoqMr-1-thi_7Z1WYq2HOxtU7zLVmmG7GFTLOefstBa-v6biPHrTjVdppR8WBCezERJKowbDuIz4nWh-ckG_SLmalEeFEtWU9E3iifZSg_u5g2CT8vcbOKHjmoZzGzTzAnKWPCAJADbgd6ErdufyqmIY4_r2kHCxgilAk",
-  "dq": "c6HNqFouOSoQ8rH4cuvGwIO38Agceqa9ZmtbKvE9TO3Za3FIF7XvxBmOrrFozhplPQLutRQf87WxJ54kjYntz58gPcf6rXdBCYvnZ8Ur7R7tuuZayfvzDkFf1-hewPGXdqHozXRrdxU7erW8HVvXSEg9dQiuyBb_yP1YtwAbBIs",
-  "n": "q_pMqQb2Lr7k1lOm_mXIBSWrn322vAWcnkBk1sVDZtR-n7keDVEOvby_LpM-7Dx-8fUTAU99RD4e4VgHb02bqmuodNfKjDXN9MFBmnhBkFWxxq0xXTj1e6IlQCGeAV2AnlcBmgzXTQ5a8IOBtBwbLkBUx1IbbwpJM6l2LhQmG756SxUjmDy9mHjQp_h0dr3u3TyceXR3GyG3cGeYfMYwaccZpGEQyCVRu1iwIahP6eoqIGGd_8V2W2vR5TU7yN4xiEdU8nGSVYcdGR7Cu22GxT0UXFYbu5o0A2LnLghjxHirw89WMm81ROaBOl5DdJzXyix2EE7snUBunJiyEi2GsQ"
+  "kid": "ee26cb95-e7e8-442f-8b92-e6f77fa29067",
+  "qi": "GN7EAfHsvdQCtJ3ZZfzNG5MWlsnoihYbo_yLI2KjArflcRFdRUo3AHSdcvaAKAmJIIZYR357lTmPCGGT9JgPqsQAPn-8-7QPf76hdzOGhuttHf4OmwKkPsYUhSrocC3tf9vj6Qp_DPLvwIhcxh18hujTRcVv08GrVrSbT_sjb0Xt55CawJ5_hvXOn9ELjhcTHLVyJu9vLd8AnEv1KMMHZohj26IaXi3HTs-dYwNMEh68J62Qaca_lvih4IY8p1Br",
+  "dp": "YO6w-ij2VU76aL6bNUoKMLYD6zRvZNpl_W0lMJp0B-PkeltGp1hZLFOX_rjDQcp2awI-V3xDzwgMPAqeYHXkM3kX8pW5ASJH4i6ABeUet_DUkU6htg189d6nVE4K-CDdUeDWKX-p95A2opRswj82Rr0R4NUAj5u2mHHB3wTV9t44D9bq1shW28-wC4lE3XgHydtVnI-MUsxaHN09Tt_5z430PMteWAPmo3mjvutW3xwDmakVfGomYmad1BOH1tud",
+  "dq": "6h-WCeKEdiwUJ9VIAtM3P6-IVZXvX5jfZWZPMDgeueS7Vu8RvFP1nZ99b1IL10a0Un21TYtT4RHRhyQhaEiEn3uMU7TgwLwbh4ds8uZvix1PZH3Lw407K_7kfICCrtvrl81CyChZIwZfSQBIq2GM6KGllQoNqijepdhz_AoDhXsLHC9e2roISPcAd8ScuX3Pti9nXK9vdTGOSSUC404XQgWTdH4er1yRzTTNdYopOSq_cqj8XoAVHeFGU7PrwZqj",
+  "n": "8-w5oWlEMSB0pA2W1S7HpMTlJW0c-6W1mlsbiFcTiQgqtblO9zanAxGE0thRWw2PhZ_z6vUvsSPk1AsWD-0nDJEKVXeL6yNGH23S_B0XOf9k7qiSUvXk_KUyF__s_GEcz5NbDwb6m-x8ij6rJblCyTVsHeyDxGbNvfDRhoUdlSo9qEV-U8M7j5QobZyuYs72wnHkeGJJGCk0zFnq0NzJaRok0aRtJQNW1qqpimMyAL8csNSTq3L93qJeTgsgXnq2GWROr0BzKA2YkX2BSdRKslcxTtstdFUSGYpqtcZY40AV7fEStitiS5M-hvsLA5aWm2ubuzmt01MOuPeLJwQFblIzSbJXOhit6E3lJktbvppgGHR1LApZ_Uh5emE6ndVPXCrA1Raf63aIWRLh1qc8fKpNr9VO9-k-Ez7OpGN9lZNBL4BJ_dR7wOrN9WYiul3RLCyzdZuHAzcikMj0Go7Wk6jUFYxCsICJdZ1FJiR4sxTJvju0LCegNIVZ92cTHJJF"
 }
 ```
