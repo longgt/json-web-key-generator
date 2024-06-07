@@ -59,6 +59,8 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyType;
 import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.JSONObjectUtils;
 
 /**
@@ -124,7 +126,7 @@ public class Launcher {
 
 			// parse out the important bits
 
-			KeyType keyType = KeyType.parse(kty);
+            KeyType keyType = parseKeyType(kty);
 
 			KeyUse keyUse = validateKeyUse(use);
 
@@ -151,10 +153,13 @@ public class Launcher {
 		options.addOption("t", "type", true, "Key Type, one of: " +
 			keyTypes.stream()
 		.map(KeyType::getValue)
-		.collect(Collectors.joining(", ")));
+                        .collect(Collectors.joining(", "))
+                + " (case-insensitive)");
 
 		options.addOption("s", "size", true,
-			"Key Size in bits, required for " + KeyType.RSA.getValue() + " and " + KeyType.OCT.getValue() + " key types. Must be an integer divisible by 8");
+                "Key Size in bits, required for " + KeyType.RSA.getValue() + " and " + KeyType.OCT.getValue() + " key types. "
+                        + "Must be an integer divisible by 8. " + "If omitted, defaults to " + RSAKeyMaker.DEFAULT_KEY_SIZE + " for "
+                        + KeyType.RSA + ", " + OctetSequenceKeyMaker.DEFAULT_KEY_SIZE + " for " + KeyType.OCT);
 		options.addOption("c", "curve", true,
 			"Key Curve, required for " + KeyType.EC.getValue() + " or " + KeyType.OKP.getValue() + " key type. Must be one of "
 				+ ecCurves.stream()
@@ -164,7 +169,8 @@ public class Launcher {
 				+ okpCurves.stream()
 				.map(Curve::getName)
 				.collect(Collectors.joining(", "))
-				+ " for OKP keys.");
+                        + " for OKP keys. " + "If omitted, defaults to " + ECKeyMaker.DEFAULT_CURVE + " for " + KeyType.EC + ", "
+                        + OKPKeyMaker.DEFAULT_CURVE + " for " + KeyType.OKP);
 
 		options.addOption("u", "usage", true, "Usage, one of: enc, sig (optional)");
 		options.addOption("a", "algorithm", true, "Algorithm (optional)");
@@ -200,55 +206,50 @@ public class Launcher {
 		}
 	}
 
-	private static JWK makeKey(String size, KeyIdGenerator kid, String crv, KeyType keyType, KeyUse keyUse, Algorithm keyAlg) {
+    private static JWK makeKey(String size, KeyIdGenerator kid, String crv, KeyType keyType, KeyUse keyUse, Algorithm keyAlg) {
 		JWK jwk;
 		if (keyType.equals(KeyType.RSA)) {
-			jwk = makeRsaKey(kid, size, keyType, keyUse, keyAlg);
+            jwk = makeRsaKey(kid, size, keyUse, keyAlg);
 		} else if (keyType.equals(KeyType.OCT)) {
-			jwk = makeOctKey(kid, size, keyType, keyUse, keyAlg);
+            jwk = makeOctKey(kid, size, keyUse, keyAlg);
 		} else if (keyType.equals(KeyType.EC)) {
-			jwk = makeEcKey(kid, crv, keyType, keyUse, keyAlg);
+            jwk = makeEcKey(kid, crv, keyUse, keyAlg);
 		} else if (keyType.equals(KeyType.OKP)) {
-			jwk = makeOkpKey(kid, crv, keyType, keyUse, keyAlg);
+            jwk = makeOkpKey(kid, crv, keyUse, keyAlg);
 		} else {
 			throw printUsageAndExit("Unknown key type: " + keyType);
 		}
 		return jwk;
 	}
 
-	private static JWK makeOkpKey(KeyIdGenerator kid, String crv, KeyType keyType, KeyUse keyUse, Algorithm keyAlg) {
-		if (Strings.isNullOrEmpty(crv)) {
-			throw printUsageAndExit("Curve is required for key type " + keyType);
-		}
-		Curve keyCurve = Curve.parse(crv);
+    private static JWK makeOkpKey(KeyIdGenerator kid, String crv, KeyUse keyUse, Algorithm keyAlg) {
+        Curve keyCurve = Strings.isNullOrEmpty(crv) ? OKPKeyMaker.DEFAULT_CURVE : Curve.parse(crv);
 
 		if (!okpCurves.contains(keyCurve)) {
-			throw printUsageAndExit("Curve " + crv + " is not valid for key type " + keyType);
+            throw printUsageAndExit("Curve " + crv + " is not valid for key type " + KeyType.OKP);
 		}
 
 		return OKPKeyMaker.make(keyCurve, keyUse, keyAlg, kid);
 	}
 
-	private static JWK makeEcKey(KeyIdGenerator kid, String crv, KeyType keyType, KeyUse keyUse, Algorithm keyAlg) {
-		if (Strings.isNullOrEmpty(crv)) {
-			throw printUsageAndExit("Curve is required for key type " + keyType);
-		}
-		Curve keyCurve = Curve.parse(crv);
+    private static JWK makeEcKey(KeyIdGenerator kid, String crv, KeyUse keyUse, Algorithm keyAlg) {
+        Curve keyCurve = Strings.isNullOrEmpty(crv) ? ECKeyMaker.DEFAULT_CURVE : Curve.parse(crv);
 
 		if (!ecCurves.contains(keyCurve)) {
-			throw printUsageAndExit("Curve " + crv + " is not valid for key type " + keyType);
+            throw printUsageAndExit("Curve " + crv + " is not valid for key type " + KeyType.EC);
 		}
 
 		return ECKeyMaker.make(keyCurve, keyUse, keyAlg, kid);
 	}
 
-	private static JWK makeOctKey(KeyIdGenerator kid, String size, KeyType keyType, KeyUse keyUse, Algorithm keyAlg) {
-		if (Strings.isNullOrEmpty(size)) {
-			throw printUsageAndExit("Key size (in bits) is required for key type " + keyType);
+    private static OctetSequenceKey makeOctKey(KeyIdGenerator kid, String size, KeyUse keyUse, Algorithm keyAlg) {
+        String keySizeValue = size;
+        if (Strings.isNullOrEmpty(keySizeValue)) {
+            keySizeValue = OctetSequenceKeyMaker.DEFAULT_KEY_SIZE;
 		}
 
-		// surrounding try/catch catches numberformatexception from this
-		Integer keySize = Integer.decode(size);
+        // surrounding try/catch catches NumberFormatException from this
+        Integer keySize = Integer.decode(keySizeValue);
 		if (keySize % 8 != 0) {
 			throw printUsageAndExit("Key size (in bits) must be divisible by 8, got " + keySize);
 		}
@@ -256,13 +257,14 @@ public class Launcher {
 		return OctetSequenceKeyMaker.make(keySize, keyUse, keyAlg, kid);
 	}
 
-	private static JWK makeRsaKey(KeyIdGenerator kid, String size, KeyType keyType, KeyUse keyUse, Algorithm keyAlg) {
-		if (Strings.isNullOrEmpty(size)) {
-			throw printUsageAndExit("Key size (in bits) is required for key type " + keyType);
+    private static RSAKey makeRsaKey(KeyIdGenerator kid, String size, KeyUse keyUse, Algorithm keyAlg) {
+        String keySizeValue = size;
+        if (Strings.isNullOrEmpty(keySizeValue)) {
+            keySizeValue = RSAKeyMaker.DEFAULT_KEY_SIZE;
 		}
 
-		// surrounding try/catch catches numberformatexception from this
-		Integer keySize = Integer.decode(size);
+        // surrounding try/catch catches NumberFormatException from this
+        Integer keySize = Integer.decode(keySizeValue);
 		if (keySize % 8 != 0) {
 			throw printUsageAndExit("Key size (in bits) must be divisible by 8, got " + keySize);
 		}
@@ -464,4 +466,13 @@ public class Launcher {
 		System.exit(1);
 		return new IllegalArgumentException("Program was called with invalid arguments");
 	}
+
+    private static KeyType parseKeyType(String kty) {
+        for (KeyType kt : keyTypes) {
+            if (kt.getValue().equalsIgnoreCase(kty)) {
+                return kt;
+            }
+        }
+        return new KeyType(kty, null);
+    }
 }

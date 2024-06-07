@@ -24,6 +24,8 @@ import com.nimbusds.jose.util.Base64URL;
  */
 public class OKPKeyMaker {
 
+    public static final Curve DEFAULT_CURVE = Curve.Ed25519;
+
 	/**
 	 * @param keyCurve
 	 * @param keyUse
