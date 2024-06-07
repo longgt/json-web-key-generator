@@ -3,7 +3,7 @@
 
 	<groupId>org.mitre</groupId>
 	<artifactId>json-web-key-generator</artifactId>
-	<version>1.2.0-SNAPSHOT</version>
+	<version>1.2.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>json-web-key-generator</name>
@@ -59,6 +59,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.7.1</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -74,6 +75,7 @@
 						</manifestEntries>
 
 					</archive>
+					<finalName>json-web-key-generator</finalName>
 				</configuration>
 				<executions>
 					<execution>
