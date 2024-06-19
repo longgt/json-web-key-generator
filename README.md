@@ -95,7 +95,7 @@ Full key:
 
 ### Import the public key
 ```bash
-gpg --import gpg\0xBA26C1D5_public.asc
+gpg --import gpg/0xBA26C1D5_public.asc
 ```
 
 ### Verify the signature
