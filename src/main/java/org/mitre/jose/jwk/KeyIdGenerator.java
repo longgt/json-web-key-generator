@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.google.common.hash.Hashing;
 import com.nimbusds.jose.jwk.JWKParameterNames;
 import com.nimbusds.jose.jwk.KeyUse;
@@ -52,8 +53,20 @@ public class KeyIdGenerator {
         return Base64URL.encode(bytes).toString();
     });
 
-    public static KeyIdGenerator UUID = new KeyIdGenerator("uuid", (params) -> {
-        return java.util.UUID.randomUUID().toString();
+    public static KeyIdGenerator UUIDv1 = new KeyIdGenerator("uuidv1", (params) -> {
+        return UuidCreator.getTimeBasedWithRandom().toString();
+    });
+
+    public static KeyIdGenerator UUIDv4 = new KeyIdGenerator("uuidv4", (params) -> {
+        return UuidCreator.getRandomBased().toString();
+    });
+
+    public static KeyIdGenerator UUIDv6 = new KeyIdGenerator("uuidv6", (params) -> {
+        return UuidCreator.getTimeOrderedWithRandom().toString();
+    });
+
+    public static KeyIdGenerator UUIDv7 = new KeyIdGenerator("uuidv7", (params) -> {
+        return UuidCreator.getTimeOrderedEpoch().toString();
     });
 
     public static KeyIdGenerator NONE = new KeyIdGenerator("none", (params) -> {
@@ -61,12 +74,18 @@ public class KeyIdGenerator {
 	});
 
 	private final String name;
+    private final String alias;
     private final Function<Map<String, Object>, String> fn;
 
     public KeyIdGenerator(String name, Function<Map<String, Object>, String> fn) {
-		this.name = name;
-		this.fn = fn;
+        this(name, name, fn);
 	}
+
+    public KeyIdGenerator(String name, String alias, Function<Map<String, Object>, String> fn) {
+        this.name = name;
+        this.alias = alias;
+        this.fn = fn;
+    }
 
     public String generate(final Map<String, Object> params) {
         return this.fn.apply(params);
@@ -76,13 +95,21 @@ public class KeyIdGenerator {
 		return this.name;
 	}
 
+    public String getAlias() {
+        return this.alias;
+    }
+
+    public boolean match(String name) {
+        return this.name.equals(name) || this.alias.equals(name);
+    }
+
 	public static List<KeyIdGenerator> values() {
-        return List.of(DATE, TIMESTAMP, SHA256, SHA384, SHA512, UUID, NONE);
+        return List.of(DATE, TIMESTAMP, SHA256, SHA384, SHA512, UUIDv1, UUIDv4, UUIDv6, UUIDv7, NONE);
 	}
 
 	public static KeyIdGenerator get(String name) {
 		return values().stream()
-			.filter(g -> g.getName().equals(name))
+                .filter(g -> g.match(name))
 			.findFirst()
 			.orElse(TIMESTAMP);
 	}

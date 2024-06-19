@@ -26,8 +26,9 @@ usage: java -jar json-web-key-generator.jar -t <keyType> [options]
                            defined
  -g,--idGenerator <arg>    Key ID generation method (optional). Can be one
                            of: date, timestamp, sha256, sha384, sha512,
-                           uuid, none. If omitted, generator method
-                           defaults to 'timestamp'.
+                           uuidv1, uuidv4, uuidv6, uuidv7, none. If
+                           omitted, generator method defaults to
+                           'timestamp'.
  -I,--noGenerateId         <deprecated> Don't generate a Key ID.
                            (Deprecated, use '-g none' instead.)
  -p,--showPubKey           Display public key separately (if applicable)
@@ -88,4 +89,16 @@ Full key:
   "dq": "6h-WCeKEdiwUJ9VIAtM3P6-IVZXvX5jfZWZPMDgeueS7Vu8RvFP1nZ99b1IL10a0Un21TYtT4RHRhyQhaEiEn3uMU7TgwLwbh4ds8uZvix1PZH3Lw407K_7kfICCrtvrl81CyChZIwZfSQBIq2GM6KGllQoNqijepdhz_AoDhXsLHC9e2roISPcAd8ScuX3Pti9nXK9vdTGOSSUC404XQgWTdH4er1yRzTTNdYopOSq_cqj8XoAVHeFGU7PrwZqj",
   "n": "8-w5oWlEMSB0pA2W1S7HpMTlJW0c-6W1mlsbiFcTiQgqtblO9zanAxGE0thRWw2PhZ_z6vUvsSPk1AsWD-0nDJEKVXeL6yNGH23S_B0XOf9k7qiSUvXk_KUyF__s_GEcz5NbDwb6m-x8ij6rJblCyTVsHeyDxGbNvfDRhoUdlSo9qEV-U8M7j5QobZyuYs72wnHkeGJJGCk0zFnq0NzJaRok0aRtJQNW1qqpimMyAL8csNSTq3L93qJeTgsgXnq2GWROr0BzKA2YkX2BSdRKslcxTtstdFUSGYpqtcZY40AV7fEStitiS5M-hvsLA5aWm2ubuzmt01MOuPeLJwQFblIzSbJXOhit6E3lJktbvppgGHR1LApZ_Uh5emE6ndVPXCrA1Raf63aIWRLh1qc8fKpNr9VO9-k-Ez7OpGN9lZNBL4BJ_dR7wOrN9WYiul3RLCyzdZuHAzcikMj0Go7Wk6jUFYxCsICJdZ1FJiR4sxTJvju0LCegNIVZ92cTHJJF"
 }
+```
+
+## Verify the GPG Signature of release JAR
+
+### Import the public key
+```bash
+gpg --import gpg/0xBA26C1D5_public.asc
+```
+
+### Verify the signature
+```bash
+gpg --verify json-web-key-generator.jar.asc json-web-key-generator.jar
 ```
